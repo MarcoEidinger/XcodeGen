@@ -184,6 +184,7 @@ extension SettingsPresetFile {
 
     public func getBuildSettings() -> BuildSettings? {
         if let cached = settingPresetSettings[path] {
+            print("Cached Build Settings found \(String(describing: cached.value))")
             return cached.value
         }
         let bundlePath = Path(Bundle.main.bundlePath)
@@ -195,11 +196,15 @@ extension SettingsPresetFile {
             Path(#file).parent().parent().parent() + relativePath,
         ]
 
+        print("Possible Settings Paths found \(possibleSettingsPaths)")
+
         if let symlink = try? (bundlePath + "xcodegen").symlinkDestination() {
             possibleSettingsPaths = [
                 symlink.parent() + relativePath,
             ] + possibleSettingsPaths
         }
+
+        print("Possible Settings Paths found (incl. symlinkDes) \(possibleSettingsPaths)")
 
         guard let settingsPath = possibleSettingsPaths.first(where: { $0.exists }) else {
             switch self {
